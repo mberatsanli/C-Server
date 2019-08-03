@@ -70,7 +70,6 @@ int main(int argc, char *argv[])
         
         if (!fork())
         {
-            /* Child Process */
             close(fd_server);
             memset(buf, 0, 2048);
             read(fd_client, buf, 2047);
