@@ -25,44 +25,44 @@ int main(int argc, char *argv[])
 {
     struct sockaddr_in server_addr, client_addr;
     socklen_t sin_len = sizeof(client_addr);
-    int fd_server, fd_client;
+    int mbs_server, mbs_client;
     char buf[2048];
     int fdimg;
     int on = 1;
 
-    fd_server = socket(AF_INET, SOCK_STREAM, 0);
-    if(fd_server < 0)
+    mbs_server = socket(AF_INET, SOCK_STREAM, 0);
+    if(mbs_server < 0)
     {
         perror("socket");
         exit(1);
     }
 
-    setsockopt(fd_server, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(int));
+    setsockopt(mbs_server, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(int));
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(serverPort);
 
-    if(bind(fd_server, (struct sockaddr *) &server_addr, sizeof(server_addr)) == -1)
+    if(bind(mbs_server, (struct sockaddr *) &server_addr, sizeof(server_addr)) == -1)
     {
         perror("bind");
-        close(fd_server);
+        close(mbs_server);
         exit(1);
     }
 
-    if(listen(fd_server, 10) == -1)
+    if(listen(mbs_server, 10) == -1)
     {
         perror("listen");
-        close(fd_server);
+        close(mbs_server);
         exit(1);
     }
 
     while (1)
     {
         
-        fd_client = accept(fd_server, (struct sockaddr *) &server_addr, &sin_len);
+        mbs_client = accept(mbs_server, (struct sockaddr *) &server_addr, &sin_len);
 
-        if (fd_client == -1)
+        if (mbs_client == -1)
         {   
             perror("Connection failed... \n");
         }
@@ -70,19 +70,19 @@ int main(int argc, char *argv[])
         
         if (!fork())
         {
-            close(fd_server);
+            close(mbs_server);
             memset(buf, 0, 2048);
-            read(fd_client, buf, 2047);
+            read(mbs_client, buf, 2047);
 
             printf("%s \n", buf);
             
-            write(fd_client, webpage, sizeof(webpage) - 1); // Ekrana bastır
+            write(mbs_client, webpage, sizeof(webpage) - 1); // Ekrana bastır
 
-            close(fd_client);
+            close(mbs_client);
             printf("closing... \n");
             exit(0);
         }
-        close(fd_client);
+        close(mbs_client);
     }
     return 0;
 }
